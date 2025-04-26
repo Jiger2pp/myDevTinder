@@ -1,0 +1,25 @@
+{
+  "name": "mydevtinder",
+  "version": "1.0.0",
+  "description": "This is an Tinder kind of application for developers",
+  "homepage": "https://github.com/Jiger2pp/myDevTinder#readme",
+  "bugs": {
+    "url": "https://github.com/Jiger2pp/myDevTinder/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jiger2pp/myDevTinder.git"
+  },
+  "license": "ISC",
+  "author": "Pankaj Pandey",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.14.0"
+  }
+}
