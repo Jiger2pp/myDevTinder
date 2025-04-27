@@ -45,7 +45,7 @@ app.post('/signup', async (req, res) => {
 
   });  
 
-  await user.save().then(() => {
+  user.save().then(() => {
     res.status(200).json({
       message: 'User added successfully',
       user: user
@@ -55,8 +55,8 @@ app.post('/signup', async (req, res) => {
       message: 'Error adding user',
       error: err
     });
-  }
-  );
+
+  });
   
 
 });
@@ -65,7 +65,7 @@ app.post('/signup', async (req, res) => {
 app.post('/login', async (req, res) => {
   const {email, password} = req.body;
 
-  await UserModel.findOne({email}).then( async(user) => { 
+  UserModel.findOne({email}).then( async(user) => { 
     if(!user){
       res.status(400).json({
         message: 'Invalid crendentials'
@@ -95,10 +95,9 @@ app.post('/login', async (req, res) => {
 });
 
 //Get User feed API
-app.get('/feed', async(req, res) => {   
+app.get('/feed', (req, res) => {   
     
-    await UserModel.find({}).then((userFeed) => {
-      res.status(200).json({
+    UserModel.find({}).then((userFeed) => {+     res.status(200).json({
         message: userFeed.length > 0 ? 'Users fetched successfully' : 'No users found',
         users:  userFeed
       });
@@ -134,9 +133,9 @@ app.post("/profile", (req, res) => {
 });
 
 //Delete user profile API
-app.delete('/profile', async (req, res) => {
+app.delete('/profile', (req, res) => {
   const userId = req.body.userId; 
-  await UserModel.findByIdAndDelete(userId).then(() => {
+  UserModel.findByIdAndDelete(userId).then(() => {
     res.status(200).json({
       message: 'User deleted successfully'
     });
@@ -152,11 +151,11 @@ app.delete('/profile', async (req, res) => {
 });
 
 //Update user profile API
-app.put('/profile', async (req, res) => {
+app.put('/profile', (req, res) => {
   const userId = req.body.userId;
   const updatedData = req.body;
 
-  await UserModel.findByIdAndUpdate(userId, updatedData, { new: true, runValidators: true }).then((user) => {
+  UserModel.findByIdAndUpdate(userId, updatedData, { new: true, runValidators: true }).then((user) => {
     res.status(200).json({
       message: user ? 'User updated successfully' : 'User not found',
       user: user
@@ -166,19 +165,19 @@ app.put('/profile', async (req, res) => {
     res.status(500).json({
       message: 'Error updating user',
       error: err
-    });
+   });
 
   }); 
 
 });
 
 //update user profile PATCH API
-app.patch('/profile', async (req, res) => {
+app.patch('/profile', (req, res) => {
   
   const userId = req.body.userId;
   const updatedData = req.body;
 
-  await UserModel.findByIdAndUpdate(userId, updatedData, { new: true }).then((user) => {
+  UserModel.findByIdAndUpdate(userId, updatedData, { new: true }).then((user) => {
     res.status(200).json({
       message: user ? 'User updated successfully' : 'User not found',
       user: user
