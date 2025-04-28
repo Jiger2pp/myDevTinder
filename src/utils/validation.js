@@ -21,7 +21,7 @@ const validateSignUp = (req) => {
         return `Please enter vaild email address.`;
     }
 
-    if(typeof lastName != "undefined" && (skills.length < 1 || skills.length > 10) ){
+    if(typeof skills != "undefined" && (skills.length < 1 || skills.length > 10) ){
         return `Skill should not be less than 1 and greater than 10.`;
     }
 

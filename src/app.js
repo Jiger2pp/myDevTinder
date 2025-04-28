@@ -3,12 +3,18 @@ const MongoConnection = require('./config/database');
 const UserModel = require('./models/user');
 const {validateSignUp} = require('./utils/validation');
 const bcrypt  = require("bcrypt");
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
+const {userAuth} = require('./middlewares/auth');
+
 
 const app = express();
 
 const PORT = 3000;
 
 app.use(express.json()); //middleware to parse JSON request body
+
+app.use(cookieParser()); //middleware to parse cookies
 
 app.post('/signup', async (req, res) => {
 
@@ -62,7 +68,7 @@ app.post('/signup', async (req, res) => {
 });
 
 //User login API
-app.post('/login', async (req, res) => {
+app.post('/login', (req, res) => {
   const {email, password} = req.body;
 
   UserModel.findOne({email}).then( async(user) => { 
@@ -72,21 +78,24 @@ app.post('/login', async (req, res) => {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await user.checkForValidPassword(password); //checking password
       if(!isPasswordValid){
         res.status(400).json({
           message: 'Invalid crendentials'
         });
 
      }else{
+          //Generating JWT token
+        const token = await user.jwtUserAuthenticationToken();         
+        res.cookie('token', token);
         res.status(200).json({
-          message: 'User logged in successfully'
+          message: 'User logged in successfully'          
         });
-      }
+     }
 
   }).catch((err) => {
     res.status(500).json({
-      message: 'Error updating user',
+      message: 'Error login user',
       error: err
     });
 
@@ -97,7 +106,8 @@ app.post('/login', async (req, res) => {
 //Get User feed API
 app.get('/feed', (req, res) => {   
     
-    UserModel.find({}).then((userFeed) => {+     res.status(200).json({
+    UserModel.find({}).then((userFeed) => {     
+      res.status(200).json({
         message: userFeed.length > 0 ? 'Users fetched successfully' : 'No users found',
         users:  userFeed
       });
@@ -112,23 +122,12 @@ app.get('/feed', (req, res) => {
 });
 
 //Get user profile API
-app.post("/profile", (req, res) => {
-
-  const userId = req.body.userId;
-
-   UserModel.findById(userId).then((user) => {
-    res.status(200).json({
-      message: user ? 'User fetched successfully' : 'User not found',
-      user: user
-    });
-  }
-  ).catch((err) => {
-    res.status(500).json({
-      message: 'Error fetching user',
-      error: err
-    });
-  }
-  );
+app.post("/profile", userAuth, (req, res) => {  
+  
+  res.status(200).json({
+    message: 'User profile fetched successfully',
+    user: req.user
+  });
 
 });
 

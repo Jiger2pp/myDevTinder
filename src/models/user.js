@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+
 const {Schemsa} = mongoose;
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -77,6 +80,27 @@ const userSchema = new mongoose.Schema({
         default: Date.now
     }
 });
+
+userSchema.methods.jwtUserAuthenticationToken = async function(){
+
+   const user = this;
+    
+   const token = await jwt.sign({"token": user._id}, "PANK1982MYDEVTINDER$#@!123");  
+   
+   return token;
+    
+}
+
+userSchema.methods.checkForValidPassword = async function(passwordByReqBody){
+
+    const user = this;
+     
+    const isPasswordValid = await bcrypt.compare(passwordByReqBody, user.password);  
+    
+    return isPasswordValid;
+     
+ }
+
 
 // Create a model from the User schema now
 const UserModel = mongoose.model('User', userSchema);
