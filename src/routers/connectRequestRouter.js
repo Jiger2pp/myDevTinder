@@ -70,4 +70,42 @@ connectRequestRouter.post("/request/send/:status/:toUserId", userAuth, async (re
 
 });
 
+//Accept or reject connection request API
+connectRequestRouter.get("/request/review/:status/:requestId", userAuth, async(req, res) => {
+
+    try{
+
+        const {status, requestId} = req.params;
+        const loggedInUserId = req.user._id;
+        const ALLOWED_STATUSES = ["accepted", "rejected"];
+
+        if(!ALLOWED_STATUSES.includes(status)){
+            return res.status(400).json({
+                message: "Invalid status"
+            });
+        }
+        const connectionRequest = await ConnectionRequest.findOne({_id: requestId, toUserId: loggedInUserId, status: "interested"});
+        if(!connectionRequest){
+            return res.status(404).json({
+                message: "Connection request not found"
+            });
+        }
+        connectionRequest.status = status;
+        const data = await connectionRequest.save();
+        res.status(200).json({
+            message: "Connection updated successfully!!",
+            data: data
+        });
+
+    }catch(err){
+
+        return res.status(500).json({
+            message: "Error fetching connection request",
+            error: err
+        });
+
+    }
+
+});
+
 module.exports = connectRequestRouter;

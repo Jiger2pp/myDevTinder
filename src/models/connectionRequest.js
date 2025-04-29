@@ -6,11 +6,13 @@ const connectionRequestSchema = new Schema({
 
     fromUserId: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: 'User'
     },
     toUserId:{
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: 'User'
     },
     status: {
         type: String,
@@ -43,6 +45,8 @@ connectionRequestSchema.pre('save', function(next){
     
     next();
 });
+
+connectionRequestSchema.index({ fromUserId: 1, toUserId: 1 });
 
 const ConnectionRequest = mongoose.model("ConnectionRequest", connectionRequestSchema);
 

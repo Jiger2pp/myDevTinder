@@ -15,7 +15,7 @@ const authRouter = express.Router();
             VALID_INPUT.forEach((input) => {
                 if (!Object.keys(req.body).includes(input)) {
                     
-                    res.status(400).json({ message: `${input} is required`});         
+                    return res.status(400).json({ message: `${input} is required`});         
                     
                 }
             
@@ -63,9 +63,9 @@ const authRouter = express.Router();
 
         UserModel.findOne({email}).then( async(user) => { 
             if(!user){
-            res.status(400).json({
-                message: 'Invalid crendentials'
-            });
+                return res.status(400).json({
+                    message: 'Invalid crendentials'
+                });
             }
 
             const isPasswordValid = await user.checkForValidPassword(password); //checking password
