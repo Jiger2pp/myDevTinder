@@ -19,13 +19,14 @@ connectRequestRouter.post("/request/send/:status/:toUserId", userAuth, async (re
         });
 
         const ALLOWED_STATUSES = ["interested", "ignore"];
+        // Check if the status is valid
         if(!ALLOWED_STATUSES.includes(status)){
             return res.status(400).json({
                 message: 'Invalid status'
             });
 
         }
-
+        // Check if the logged-in user is trying to send a request to themselves
         if(toUserId === loggedInUser._id.toString()){
             return res.status(400).json({
                 message: 'You cannot send a connection request to yourself!!!'
