@@ -5,12 +5,17 @@ const authRouter = require('./routers/authRouter');
 const profileRouter = require('./routers/profileRouter');
 const userRouter = require('./routers/userRouter');
 const connectRequestRouter = require('./routers/connectRequestRouter');
+const cors = require('cors');
 
 
 const app = express();
 
 const PORT = 3000;
 
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 app.use(express.json()); //middleware to parse JSON request body
 
 app.use(cookieParser()); //middleware to parse cookies

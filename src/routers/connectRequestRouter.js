@@ -71,7 +71,7 @@ connectRequestRouter.post("/request/send/:status/:toUserId", userAuth, async (re
 });
 
 //Accept or reject connection request API
-connectRequestRouter.get("/request/review/:status/:requestId", userAuth, async(req, res) => {
+connectRequestRouter.post("/request/review/:status/:requestId", userAuth, async(req, res) => {
 
     try{
 

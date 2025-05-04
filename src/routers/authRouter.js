@@ -70,23 +70,26 @@ const authRouter = express.Router();
 
             const isPasswordValid = await user.checkForValidPassword(password); //checking password
             if(!isPasswordValid){
-                res.status(400).json({
-                message: 'Invalid crendentials'
+                return res.status(400).json({
+                    message: 'Invalid crendentials'
                 });
 
             }else{
                 //Generating JWT token
                 const token = await user.jwtUserAuthenticationToken();         
-                res.cookie('token', token);
+                res.cookie('token', token, {
+                    httpOnly: true
+                });
                 res.status(200).json({
-                message: 'User logged in successfully'          
+                    message: 'User logged in successfully',
+                    user         
                 });
             }
 
         }).catch((err) => {
             res.status(500).json({
-            message: 'Error login user',
-            error: err
+                message: 'Error login user',
+                error: err
             });
 
         }); 
