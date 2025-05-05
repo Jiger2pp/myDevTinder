@@ -84,7 +84,7 @@ userSchema.methods.jwtUserAuthenticationToken = async function(){
 
    const user = this;
     
-   const token = await jwt.sign({"token": user._id}, "PANK1982MYDEVTINDER$#@!123");  
+   const token = await jwt.sign({"token": user._id}, process.env.JWT_TOKEN_SECRET );  
    
    return token;
     

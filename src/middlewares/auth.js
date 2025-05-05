@@ -3,7 +3,7 @@ const UserModel = require('../models/user');
 
 const userAuth = (req, res, next) => {
 
-    jwt.verify(req.cookies.token, "PANK1982MYDEVTINDER$#@!123", function(err, decoded) {
+    jwt.verify(req.cookies.token, process.env.JWT_TOKEN_SECRET , function(err, decoded) {
         
         if (err) {
           return res.status(401).json({ message: 'Unauthorized access!!!' });

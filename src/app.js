@@ -5,12 +5,13 @@ const authRouter = require('./routers/authRouter');
 const profileRouter = require('./routers/profileRouter');
 const userRouter = require('./routers/userRouter');
 const connectRequestRouter = require('./routers/connectRequestRouter');
+require('dotenv').config();
+
 const cors = require('cors');
 
-
+console.log(process.env);
 const app = express();
 
-const PORT = 3000;
 
 app.use(cors({
   origin: true,
@@ -27,8 +28,8 @@ app.use("/", connectRequestRouter); //middleware to use connectRequestRouter
 
 MongoConnection().then(() => {
   console.log('MongoDB connection established');
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+  app.listen(process.env.PORT, () => {
+    console.log(`Server is running on http://localhost:${process.env.PORT}`);
   });
 }).catch((err) => {
   console.log('MongoDB Connection Failed');
