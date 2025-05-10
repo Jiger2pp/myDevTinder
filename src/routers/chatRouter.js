@@ -14,7 +14,7 @@ chatRouter.get("/chat/:targetId", userAuth,  async (req, res) => {
         //@todo need to add proper validations
 
         //searching for chat for logged in user
-        const chat = await ChatModel.findOne({participants: {$in: [userId, targetId]}}).populate(
+        const chat = await ChatModel.findOne({participants: {$all: [userId, targetId]}}).populate(
             {path: "messages.fromUserId", select: "firstName lastName"}
         ).populate("participants", "firstName lastName");
         if(!chat){

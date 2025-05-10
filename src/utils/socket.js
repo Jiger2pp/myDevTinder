@@ -25,7 +25,7 @@ const initializeSocket = (server) => {
 
                 const roomId = [targetId,userId].sort().join("_");
                 //looking chat for target user id and user id
-                const chat = await ChatModel.findOne({participants: {$in:[userId, targetId]}});
+                const chat = await ChatModel.findOne({participants: {$all:[userId, targetId]}});
                 if(!chat){
 
                     //no chat then create chat entry in the DB
