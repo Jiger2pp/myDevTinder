@@ -3,8 +3,33 @@ const {userAuth} = require('../middlewares/auth');
 const UserModel = require('../models/user');
 const { validateInputFields, validateUpdatePasswordFields} = require('../utils/validation');
 const bcrypt  = require("bcrypt");
+const UserPictureModel = require('../models/userPicture');
 const profileRouter = express.Router();
+const multer = require("multer");
 
+const storage = multer.diskStorage({
+  destination: function(req, file, cb){
+    return cb(null, 'uploads/users/picture');
+  },
+  filename: function(req, file, cb){
+    const fileName =  Date.now() + '_' + file.originalname.replace(" ", "_");
+    return cb(null, fileName);
+  }
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype == 'image/jpeg'){
+      return cb(null, true);
+    }else{
+      cb(null, false);
+      return cb( new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }
+  }
+});
+
+const uploadImage = upload.single("userImage");
 
 
 //Get user profile API
@@ -113,6 +138,69 @@ profileRouter.delete('/profile', (req, res) => {
         });
 
     });
+
+});
+
+//upload user profile image/picture
+profileRouter.post("/profile/picture", userAuth, uploadImage, async (req, res) => {
+    
+    try {
+        const user = req.user;
+        if (!req.file) {
+            return res.status(400).send('No file uploaded.');
+        }
+        let userPicture = await UserPictureModel.findOne({userId: user._id});
+        if(!userPicture){
+            userPicture = new UserPictureModel({
+                userId: user._id,
+                pictureUrl: req.file.filename
+            });
+        }
+        userPicture.pictureUrl = req.file.filename;
+
+        const pictureData = await userPicture.save();
+
+        res.status(200).json({
+            message: 'File uploaded successfully',
+            filename: req.file.filename,
+            filepath: req.file.path,
+            data: pictureData
+        });     
+       
+        
+    } catch (err) {
+        res.status(500).json({
+            message: 'Error in uploading user picture',
+            error: err
+        });
+    }
+});
+
+//get user profile picture
+profileRouter.get("/profile/picture/:userId", userAuth, async (req, res) => {
+
+    try {
+        const user = req.user;
+        const userPicture = await UserPictureModel.findOne({userId: user._id});
+        //console.log(userPicture);
+        if(!userPicture){
+            return res.status(404).json({
+                message: "User picture not found.",
+                data: userPicture
+            });
+        }
+
+        res.status(200).json({
+            message: "User picture fetch successfully.",
+            data: userPicture
+        });
+        
+    } catch (err) {
+        res.status(500).json({
+            message: "Error in fetching user picture",
+            error: err
+        });
+    }
 
 });
 

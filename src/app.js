@@ -12,6 +12,8 @@ require('dotenv').config();
 
 const cors = require('cors');
 const chatRouter = require('./routers/chatRouter');
+const path = require('node:path');
+const staticRouter = require('./routers/staticFileRouter');
 
 
 
@@ -30,7 +32,7 @@ app.use(cors({
 app.use(express.json()); //middleware to parse JSON request body
 
 app.use(cookieParser()); //middleware to parse cookies
-
+app.use("/", staticRouter);
 app.use("/", authRouter); //middleware to use authRouter
 app.use("/", profileRouter); //middleware to use profileRouter
 app.use("/", userRouter); //middleware to use userRouter
