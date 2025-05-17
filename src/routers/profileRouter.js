@@ -147,7 +147,7 @@ profileRouter.post("/profile/picture", userAuth, uploadImage, async (req, res) =
     try {
         const user = req.user;
         if (!req.file) {
-            return res.status(400).send('No file uploaded.');
+            return res.status(400).json({ message: 'No file uploaded.'});
         }
         let userPicture = await UserPictureModel.findOne({userId: user._id});
         if(!userPicture){
@@ -159,6 +159,15 @@ profileRouter.post("/profile/picture", userAuth, uploadImage, async (req, res) =
         userPicture.pictureUrl = req.file.filename;
 
         const pictureData = await userPicture.save();
+        if(!pictureData){
+            return res.status(400).json({
+                message: 'Error in uploading user picture.'
+            });
+        }
+        //console.log("pictureData", pictureData);
+        user.userPictureId = pictureData._id;
+        user.pictureUrl = pictureData.pictureUrl;
+        await user.save();
 
         res.status(200).json({
             message: 'File uploaded successfully',
@@ -181,14 +190,7 @@ profileRouter.get("/profile/picture/:userId", userAuth, async (req, res) => {
 
     try {
         const user = req.user;
-        const userPicture = await UserPictureModel.findOne({userId: user._id});
-        //console.log(userPicture);
-        if(!userPicture){
-            return res.status(404).json({
-                message: "User picture not found.",
-                data: userPicture
-            });
-        }
+        const userPicture = await UserPictureModel.findOne({userId: user._id});       
 
         res.status(200).json({
             message: "User picture fetch successfully.",

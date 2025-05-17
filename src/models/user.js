@@ -48,6 +48,18 @@ const userSchema = new mongoose.Schema({
         }       
           
     },
+    userPictureId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "UserPicture"
+    },
+    pictureUrl: {
+        type: String,
+        default: ""
+    },
+    about:{
+        type: String,
+        default: "Please write in short about yourself"
+    },
     age:{
         type: Number,
         min: [5, 'Min age must be at least 5, but {VALUE} is given'],
